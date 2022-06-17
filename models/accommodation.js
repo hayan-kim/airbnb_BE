@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const accomodationSchema = mongoose.Schema({
+const accommodationSchema = mongoose.Schema({
   accId: {
     type: String,    
   },
@@ -11,6 +11,11 @@ const accomodationSchema = mongoose.Schema({
 
   photos: {
     type: Array,    
+  },
+
+  
+  accName: {
+    type: String,       
   },
 
   openAt: {
@@ -55,4 +60,4 @@ const accomodationSchema = mongoose.Schema({
 });
 
 
-module.exports = mongoose.model("Accomodation", accomodationSchema);
+module.exports = mongoose.model("Accommodation", accommodationSchema);

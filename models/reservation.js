@@ -9,6 +9,10 @@ const reservationSchema = mongoose.Schema({
     type: String,
   },
 
+  accName:{
+    type: String,
+  },
+
   checkIn: {
     type: Date,
     required: true,

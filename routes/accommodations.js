@@ -7,7 +7,6 @@ const Counters = require("../models/counter");
 const router = express.Router();
 
 const aws = require("aws-sdk");
-const accommodation = require("../models/accommodation");
 const s3 = new aws.S3();
 aws.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
@@ -55,7 +54,7 @@ router.get("/:accId", async (req, res) => {
 //<-----숙소 정보 작성 API----->
 router.post("/", authMiddleware, async (req, res) => {
   //작성자의 userId를 숙소 정보와 함께 DB에 저장
-  const userId = res.locals.user.userId;
+  const userId = res.locals.user.userId; 
   const {    
     photos,
     accName,
@@ -118,9 +117,10 @@ router.post("/", authMiddleware, async (req, res) => {
 
 
 //<----숙소정보 수정 API----->
+
 router.put("/:accId", authMiddleware, async (req, res) => {
-  const { accId } = req.params;
   const userId = res.locals.user.userId; 
+  const { accId } = req.params;
   const {    
     photos,
     accName,
