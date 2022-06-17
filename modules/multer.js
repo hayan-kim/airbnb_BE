@@ -2,7 +2,7 @@ const multer = require('multer');
 const multerS3 = require('multer-s3');
 const aws = require('aws-sdk');
 
-//AWS S3에 접근하기 위한 정보는 gitHub에 올라가지 않는 파일에 따로 은닉함.
+//AWS S3에 접근하기 위한 정보는 gitHub에 올라가지 않는 파일에 따로 은닉함. (dotenv)
 aws.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
   secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
@@ -15,7 +15,7 @@ const s3 = new aws.S3();
 const upload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: 'hh99-6th',
+    bucket: 'hh99-6th',  // S3 bucket 이름 제대로 넣어주기
     acl: 'public-read',
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: function (req, file, cb) {
