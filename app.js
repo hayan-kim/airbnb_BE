@@ -21,7 +21,9 @@ const app = express();
 const port = 3000;
 
 const userRouter = require('./routes/users');
-const articleRouter = require('./routes/articles');
+const accommodationRouter = require('./routes/accommodations');
+const reservationRouter = require('./routes/reservations');
+
 const commentRouter = require('./routes/comments');
 const imageRouter = require('./routes/images');
 
@@ -50,7 +52,8 @@ app.use(express.urlencoded());
 app.use(requestMiddleware); 
 
 app.use('/api/user', [userRouter]);
-app.use('/api/article', [articleRouter]);
+app.use('/api/accommodation', [accommodationRouter]);
+app.use('/api/reservation', [reservationRouter]);
 app.use('/api/comment', [commentRouter]);
 app.use('/api/image',[imageRouter]);
 
