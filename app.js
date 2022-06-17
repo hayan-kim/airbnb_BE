@@ -51,11 +51,12 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(requestMiddleware); 
 
-app.use('/api/user', [userRouter]);
-app.use('/api/accommodation', [accommodationRouter]);
-app.use('/api/reservation', [reservationRouter]);
+app.use('/api/users', [userRouter]);
+app.use('/api/accommodations', [accommodationRouter]);
+app.use('/api/reservations', [reservationRouter]);
+app.use('/api/images',[imageRouter]);
+
 app.use('/api/comment', [commentRouter]);
-app.use('/api/image',[imageRouter]);
 
 app.get('/', (req, res) => {    
     res.send('hello world');
