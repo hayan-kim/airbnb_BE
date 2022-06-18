@@ -23,8 +23,6 @@ const port = 3000;
 const userRouter = require('./routes/users');
 const accommodationRouter = require('./routes/accommodations');
 const reservationRouter = require('./routes/reservations');
-
-const commentRouter = require('./routes/comments');
 const imageRouter = require('./routes/images');
 const reviewRouter = require("./routes/reviews");
 
@@ -53,14 +51,10 @@ app.use(express.urlencoded());
 app.use(requestMiddleware); 
 
 app.use('/api/users', [userRouter]);
-
-
 app.use('/api/accommodations', [accommodationRouter]);
 app.use('/api/reservations', [reservationRouter]);
 app.use('/api/images',[imageRouter]);
 app.use('/api/reviews', [reviewRouter]);
-app.use('/api/comment', [commentRouter]);
-
 
 app.get('/', (req, res) => {    
     res.send('hello world');
