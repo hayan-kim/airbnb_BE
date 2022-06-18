@@ -1,6 +1,6 @@
 const express = require('express');
 const User = require('../models/user');
-const Articles = require('../models/article');
+const Accommodation = require('../models/accommodation');
 const Comments = require('../models/comment');
 const Counters = require('../models/counter');
 const authMiddleware = require('../middlewares/auth-middleware');
