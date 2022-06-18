@@ -8,9 +8,8 @@ const router = express.Router();
 
 //<-----사용자 예약 조회 (마이페이지)----->
 
-router.get("/:userId", async (req, res) => {
-  //authMiddleware,
-
+router.get("/:userId", authMiddleware, async (req, res) => {
+  
   const userId = req.params;
   const reservations = await Reservation.find({ userId });
 
@@ -20,9 +19,8 @@ router.get("/:userId", async (req, res) => {
 });
 
 //<-----예약 상세 조회(?)----->
-router.get("/:revId", async (req, res) => {
-  //authMiddleware,
-
+router.get("/:revId", authMiddleware, async (req, res) => {
+  
   const revId = req.params;
   const reservation = await Reservation.findOne({ revId });
 
@@ -32,13 +30,13 @@ router.get("/:revId", async (req, res) => {
 });
 
 //<-----예약 작성 API----->
-router.post("/:accId", async (req, res) => {
-  //authMiddleware,
+router.post("/:accId", authMiddleware, async (req, res) => {
+  
   const { accId } = req.params;
   const accommodation = await Accommodation.findOne({ accId });
   const accName = accommodation["accName"];
-  const { userId, checkIn, checkOut, guests, charge, totalCharge } = req.body; //userId 로그인 되면 뺄 것
-  //const userId = res.locals.user.userId;
+  const { checkIn, checkOut, guests, charge, totalCharge } = req.body; 
+  const userId = res.locals.user.userId;
 
   if (!checkIn || !checkOut || !guests || !charge || !totalCharge) {
     return res.status(400).json({
@@ -108,18 +106,17 @@ router.post("/:accId", async (req, res) => {
 });
 
 // <-----예약 취소 API----->
-router.delete("/:revId", async (req, res) => {
-  //authMiddleware,
+router.delete("/:revId", authMiddleware, async (req, res) => {
+  
   const { revId } = req.params;
-  const { userId } = req.body; // 로그인 기능 되면 이 행은 삭제할 것
-  //const userId = res.locals.user.userId;
+  const userId = res.locals.user.userId;
   const reservation = await Reservation.findOne({ revId });
   let accommodation = await Accommodation.findOne({
     accId: reservation["accId"],
   });
 
   if (userId === reservation["userId"]) {
-    //예약했던 날짜들을 요소로 갖는 배열 생성
+    // 예약했던 날짜들을 요소로 갖는 배열 생성
     let Dates = new Array(
       (reservation["checkOut"] - reservation["checkIn"]) / 86400000 + 1
     ).fill("init");
@@ -128,7 +125,7 @@ router.delete("/:revId", async (req, res) => {
         new Date(Date.parse(reservation["checkIn"]) + 86400000 * index)
     );
 
-    //예약했던 날짜들을 숙소정보 DB의 Vacancy 객체에서 "true"로 돌려줌
+    // 예약했던 날짜들을 숙소정보 DB의 Vacancy 객체에서 "true"로 돌려줌
     requestDates.forEach(async (item) => {
       accommodation["Vacancy"][item] = true;
     });
