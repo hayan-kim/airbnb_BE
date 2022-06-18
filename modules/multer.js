@@ -15,7 +15,7 @@ const s3 = new aws.S3();
 const upload = multer({
   storage: multerS3({
     s3: s3,
-    bucket: 'hh99-6th',  // S3 bucket 이름 제대로 넣어주기
+    bucket: 'airbnb99',  // S3 bucket 이름 제대로 넣어주기
     acl: 'public-read',
     contentType: multerS3.AUTO_CONTENT_TYPE,
     key: function (req, file, cb) {
