@@ -9,6 +9,10 @@ const reservationSchema = mongoose.Schema({
     type: String,
   },
 
+  userId: {
+    type: String,
+  },
+
   accName:{
     type: String,
   },

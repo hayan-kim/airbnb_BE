@@ -28,6 +28,11 @@ const accommodationSchema = mongoose.Schema({
     required: true,
   },
 
+  Vacancy: {
+    type: Object,    
+    required: true,
+  },
+
   address: {
     type: String,
     required: true,
