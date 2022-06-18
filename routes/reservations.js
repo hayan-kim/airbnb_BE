@@ -19,10 +19,10 @@ router.get("/:userId", authMiddleware, async (req, res) => {
 });
 
 //<-----예약 상세 조회(?)----->
-router.get("/:revId", authMiddleware, async (req, res) => {
+router.get("/:reserveId", authMiddleware, async (req, res) => {
   
-  const revId = req.params;
-  const reservation = await Reservations.findOne({ revId });
+  const reserveId = req.params;
+  const reservation = await Reservations.findOne({ reserveId });
 
   res.json({
     reservation,
@@ -30,13 +30,13 @@ router.get("/:revId", authMiddleware, async (req, res) => {
 });
 
 //<-----예약 작성 API----->
-router.post("/:accId", async (req, res) => {  //authMiddleware, 
+router.post("/:accId", authMiddleware, async (req, res) => {   
   
   const { accId } = req.params;
   const accommodation = await Accommodations.findOne({ accId });
   const accName = accommodation["accName"];
-  const { userId, checkIn, checkOut, guests, charge, totalCharge } = req.body; //userId 로그인 되면 빼기
-  //const userId = res.locals.user.userId;
+  const { checkIn, checkOut, guests, charge, totalCharge } = req.body; 
+  const userId = res.locals.user.userId;
 
   if (!checkIn || !checkOut || !guests || !charge || !totalCharge) {
     return res.status(400).json({
@@ -80,18 +80,18 @@ router.post("/:accId", async (req, res) => {  //authMiddleware,
     { $set: { Vacancy: accommodation["Vacancy"] } }
   );
 
-  // (2) 예약고유번호 revId를 카운팅하며 생성한다.
+  // (2) 예약고유번호 reserveId 카운팅하며 생성한다.
   let counter = await Counters.findOne({ name: "Reservations" }).exec();
   if (!counter) {
     counter = await Counters.create({ name: "Reservations", count: 0 });
   }
   counter.count++;
   counter.save();
-  let revId = counter.count;
+  let reserveId = counter.count;
 
   // (3) DB에 예약정보를 등록한다.
   const reservation = await Reservation.create({
-    revId,
+    reserveId,
     accId,
     userId,
     accName,
@@ -106,12 +106,11 @@ router.post("/:accId", async (req, res) => {  //authMiddleware,
 });
 
 // <-----예약 취소 API----->
-router.delete("/:revId",  async (req, res) => { //authMiddleware,
+router.delete("/:reserveId", authMiddleware, async (req, res) => { 
   
-  const { revId } = req.params;
-  // const userId = res.locals.user.userId;
-  const {userId} = req.body; // 로그인 사용시 제거할 것
-  const reservation = await Reservations.findOne({ revId });
+  const { reserveId } = req.params;
+  const userId = res.locals.user.userId;  
+  const reservation = await Reservations.findOne({ reserveId });
   let accommodation = await Accommodations.findOne({
     accId: reservation["accId"],
   });
@@ -137,7 +136,7 @@ router.delete("/:revId",  async (req, res) => { //authMiddleware,
     );
 
     // 예약 정보를 DB에서 삭제함.
-    await Reservations.deleteOne({ revId });
+    await Reservations.deleteOne({ reserveId });
     res.status(200).json({ message: "예약을 취소하셨습니다." });
   } else {
     res.status(401).json({ message: "예약자만 취소할 수 있습니다." });
