@@ -44,11 +44,10 @@ router.get("/:accId", async (req, res) => {
 });
 
 //<-----숙소 정보 작성 API----->
-router.post("/", async (req, res) => {   //authMiddleware, 
+router.post("/", authMiddleware, async (req, res) => {   
   //작성자의 userId를 숙소 정보와 함께 DB에 저장
-  //const userId = res.locals.user.userId;  
-  const {
-    userId, //로그인 되면 userId 빼기
+  const userId = res.locals.user.userId;  
+  const {    
     photos,
     accName,
     openAt,
@@ -118,12 +117,10 @@ router.post("/", async (req, res) => {   //authMiddleware,
 });
 
 //<----숙소정보 수정 API----->
-
-router.put("/:accId",  async (req, res) => { //authMiddleware,
-  //const userId = res.locals.user.userId;
+router.put("/:accId", authMiddleware, async (req, res) => { 
+  const userId = res.locals.user.userId;
   const { accId } = req.params;
-  const {
-    userId, //로그인 되면 userId 빼기
+  const {    
     photos,
     accName,
     openAt,
