@@ -6,72 +6,87 @@ const Images = require("../models/image");
 const Counters = require("../models/counter");
 const router = express.Router();
 
-
 //<-----사용자 예약 조회 (마이페이지)----->
 
-router.get("/:userId", authMiddleware, async (req, res) => {  //authMiddleware,
-  const userId = req.params
-
+router.get("/:userId",  async (req, res) => {  //authMiddleware,
+  const userId = req.params;
+  
   //게시글들을 내림차순으로 정렬해서 보여준다.
-  const reservations = await Reservation.find({ userId }); 
+  const reservations = await Reservation.find({ userId });
   res.json({
     reservations,
   });
 });
 
-
 //<-----예약 상세 조회(?)----->
-router.get("/:revId", authMiddleware, async (req, res) => {  //authMiddleware, 
+router.get("/:revId",  async (req, res) => {   //authMiddleware,
+  
   const revId = req.params;
   const reservation = await Reservation.findOne({ revId });
-      
+
   res.json({
     reservation,
   });
 });
 
-
 //<-----예약 작성 API----->
+router.post("/:accId",  async (req, res) => { //authMiddleware,
+  const { accId } = req.params;
+  const accommodation = await Accommodation.findOne({ accId });
+  const accName = accommodation["accName"];
+  const { userId, checkIn, checkOut, guests, charge, totalCharge } = req.body; //userId 로그인 되면 뺄 것
+  //const userId = res.locals.user.userId;
 
-// 호스트는, 특정 숙소를 등록한 상태에서 예약가능기간을 계속 반복해서, 그러나 동시에 단 한 건씩만 "오픈"할 수 있다. 
-// 1. 예약가능일은 6월 1일 ~ 6월 7일 과 같은 짧은 기간으로 등록한다.
-// 2. 6월 1일 ~ 6월 7일 사이의 "일부 기간라도" 즉 6월 3일 ~ 6월 4일 같은 기간이라도 예약되면 "해당 오픈 건은 종료"이다.
-// 2-1. 따라서 Accommodation의 예약가능기간을 나타내는 (openAt ~ closeAt) 두 변수는 예외적인 값, 즉 현재보다 이미 과거의 날짜로 처리해준다. (1050418800000 = 2003.4.16)
-//      frontend에서 이 값을 받으면 "예약 불가"로 보여줘야 한다. *openAt, closeAt은 Date 자료형을 갖는 변수이기 때문이다. DB Model로 고정해두었음.
-// 2-2. 귀찮지만 이미 예약된 날짜를 제외하고 가능일을 다시 등록하는 것은 호스트의 몫인 것으로...
-
-// 예약 날짜가 가능한 날짜인지 확인해야 한다. 
-// 1. Accommodation의 openAt, closeAt 사이에 들어와야 한다. 
-
-router.post("/:accId", authMiddleware, async (req, res) => {  
-  const { accId } = req.params;  
-  const accommodation = await Accommodation.findOne({ accId })
-  const accName = accommodation["accName"] 
-  const {  checkIn, checkOut, guests, charge, totalCharge } = req.body; 
-  const userId = res.locals.user.userId;   
-  
-  if ( !checkIn || !checkOut || !guests || !charge || !totalCharge ) {
+  if (!checkIn || !checkOut || !guests || !charge || !totalCharge) {
     return res.status(400).json({
       errorMessage: "작성란을 모두 입력해주세요.",
     });
-  } 
+  }
 
-  if (checkIn < accommodation["openAt"] || checkOut > accommodation["closeAt"])  {
+  // 예약 기간 자체가 오픈 기간과 맞지 않다면 에러 처리.
+  if (
+    checkIn < accommodation["openAt"] ||
+    checkOut > accommodation["closeAt"]
+  ) {
     return res.status(400).json({
       errorMessage: "예약이 불가능한 날짜가 포함되었습니다.",
     });
   }
+
+  // 예약 기간의 각 날짜들을 요소로 갖는 "예약일 배열"을 생성한다.
+  let Dates = new Array((checkOut - checkIn) / 86400000 + 1).fill("init");
+  let requestDates = Dates.map(
+    (item, index) => (item = new Date(checkIn + 86400000 * index))
+  );
+
+  // 예약일 배열을 순회하며, 현재 예약하려는 숙소의 예약가능일 객체(Vacancy)를 검사하여 false가 하나라도 있는지 확인한다.
+  let availability = requestDates.every(item => accommodation["Vacancy"][item])  
   
- //위 조건들을 통과하면 예약이 가능하다. 예약 절차를 실행. 
- //revId를 카운팅하며 생성한다. 
+  if (!availability) {
+    return res.status(400).json({
+      errorMessage: "예약이 불가능한 날짜가 포함되었습니다.",
+    });
+  }
+
+  // 위 조건들을 모두 통과하면 예약이 가능하다. 예약 절차 (1) ~ (3) 실행.
+
+  // (1) 숙소 정보의 예약가능객체 Vacancy에서 지금 예약하는 날짜들은 false로 바꿔준다.
+  requestDates.forEach((item) => (accommodation["Vacancy"][item] = false));
+  await Accommodation.updateOne(
+    { accId },
+    { $set: { Vacancy: accommodation["Vacancy"] } }
+  );
+
+  // (2) 예약고유번호 revId를 카운팅하며 생성한다.
   let counter = await Counters.findOne({ name: "Reservations" }).exec();
   if (!counter) {
-    counter = await Counters.create({ name: "Reservations", count: 0 }); 
+    counter = await Counters.create({ name: "Reservations", count: 0 });
   }
   counter.count++;
   counter.save();
-  let revId = counter.count;    
+  let revId = counter.count;
 
+  // (3) DB에 예약정보를 등록한다.
   const reservation = await Reservation.create({
     revId,
     accId,
@@ -81,35 +96,45 @@ router.post("/:accId", authMiddleware, async (req, res) => {
     checkOut,
     guests,
     charge,
-    totalCharge    
-  }); 
+    totalCharge,
+  });
 
-  const openAt = 1050418800000
-  const closeAt = 1050418800000
-
-  await Accommodation.updateOne(   
-    { accId },
-    { $set: { openAt, closeAt } }
-  );
-
-  res
-    .status(200)
-    .json({ message: "예약하셨습니다." }); 
+  res.status(200).json({ message: "예약하셨습니다." });
 });
 
-
-//<-----예약 취소 API----->
-router.delete("/:revId", authMiddleware, async (req, res) => {
+// <-----예약 취소 API----->
+// 지금 구현된 상태는 예약 취소하면 그냥 예약이 사라질 뿐, 해당 숙소 페이지에 예약 이전 상태가 부활하지 않음. (예약불가 상태가 됨)
+// 캘린더 구현되는 거 보고 어디까지 만들 수 있을지 설계할 것.
+router.delete("/:revId",  async (req, res) => { //authMiddleware,
   const { revId } = req.params;
-  const userId = res.locals.user.userId
+  const { userId } = req.body; // 로그인 기능 되면 이 행은 삭제할 것
+  //const userId = res.locals.user.userId;
   const reservation = await Reservation.findOne({ revId });
+  let accommodation = await Accommodation.findOne( { accId: reservation["accId"] } )
   
-  if ( userId === reservation["userId"]) { 
-    await Reservation.deleteOne({ revId });        
-    res.status(200).json({ 
-      message: "예약을 취소하셨습니다.", 
-    });      
-  }  
+  if (userId === reservation["userId"]) {
+    //예약했던 날짜들을 요소로 갖는 배열 생성
+    let Dates = new Array( ( reservation["checkOut"] - reservation["checkIn"] ) / 86400000 + 1).fill("init");     
+    milliseconds = Date.parse(reservation["checkIn"])   
+    let requestDates = Dates.map((item,index) => new Date(milliseconds + 86400000 * index) )       
+    
+    //예약했던 날짜들을 숙소정보 DB의 Vacancy 객체에서 "true"로 돌려줌    
+    requestDates.forEach(async (item) =>{
+      (accommodation["Vacancy"][item] = true)
+    } );            
+    
+    await Accommodation.updateOne(
+    { accId: reservation["accId"] },
+    { $set: { Vacancy: accommodation["Vacancy"] } }
+    );
+
+    // 예약 정보를 DB에서 삭제함.
+    await Reservation.deleteOne({ revId });
+    res.status(200).json({ message: "예약을 취소하셨습니다." });
+
+  } else {
+    res.status(401).json({ message: "예약자만 취소할 수 있습니다." });
+  }
 });
 
 module.exports = router;

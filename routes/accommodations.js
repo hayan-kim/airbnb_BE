@@ -14,7 +14,6 @@ aws.config.update({
   region: "ap-northeast-2",
 });
 
-
 //<-----전체 숙소 리스트 조회 API----->
 router.get("/", async (req, res) => {
   //숙소들을 모두 보여준다.
@@ -24,22 +23,16 @@ router.get("/", async (req, res) => {
   });
 });
 
-
 //<-----기간으로 검색  API----->
-router.get("/searchByPeriod", async (req, res) => {  
+router.get("/searchByPeriod", async (req, res) => {
   const { tripStart, tripEnd } = req.body;
   const targetAccommodations = await Accommodation.find({
-    $and : 
-    [
-    { "openAt": { $lte : tripStart } },
-    { "closeAt": { $gte : tripEnd } }
-    ]
+    $and: [{ openAt: { $lte: tripStart } }, { closeAt: { $gte: tripEnd } }],
   });
   res.json({
     targetAccommodations,
   });
 });
-
 
 //<-----숙소정보 상세 조회 API----->
 router.get("/:accId", async (req, res) => {
@@ -50,12 +43,12 @@ router.get("/:accId", async (req, res) => {
   });
 });
 
-
 //<-----숙소 정보 작성 API----->
-router.post("/", authMiddleware, async (req, res) => {
+router.post("/", async (req, res) => {   //authMiddleware, 
   //작성자의 userId를 숙소 정보와 함께 DB에 저장
-  const userId = res.locals.user.userId; 
-  const {    
+  //const userId = res.locals.user.userId;  
+  const {
+    userId, //로그인 되면 userId 빼기
     photos,
     accName,
     openAt,
@@ -96,6 +89,14 @@ router.post("/", authMiddleware, async (req, res) => {
     });
   }
 
+  // 예약가능기간(openAt ~ closeAt)의 각 날짜들을 key로, 예약가능여부를 value로(boolean) 갖는 "공실 객체" Vacancy 생성
+  const openDays = (closeAt - openAt) / 86400000 + 1;
+  let Vacancy = {};
+  for (let i = 1; i <= openDays; i++) {
+    let humanDate = new Date(openAt + 86400000 * (i - 1));
+    Vacancy[humanDate] = true;
+  }
+
   await Accommodation.create({
     accId,
     userId,
@@ -103,6 +104,7 @@ router.post("/", authMiddleware, async (req, res) => {
     accName,
     openAt,
     closeAt,
+    Vacancy,
     address,
     desc1_hanmadi,
     desc2_surroundings,
@@ -115,13 +117,13 @@ router.post("/", authMiddleware, async (req, res) => {
   res.status(200).json({ message: "숙소 정보를 등록했습니다." });
 });
 
-
 //<----숙소정보 수정 API----->
 
-router.put("/:accId", authMiddleware, async (req, res) => {
-  const userId = res.locals.user.userId; 
+router.put("/:accId",  async (req, res) => { //authMiddleware,
+  //const userId = res.locals.user.userId;
   const { accId } = req.params;
-  const {    
+  const {
+    userId, //로그인 되면 userId 빼기
     photos,
     accName,
     openAt,
@@ -174,6 +176,15 @@ router.put("/:accId", authMiddleware, async (req, res) => {
 
   if (userId === existAccommodation["userId"]) {
     //현재 로그인한 사용자가 숙소를 등록한 사용자라면 숙소 정보 수정을 실행한다.
+
+    // 예약가능기간(openAt ~ closeAt)의 각 날짜들을 key로, 예약가능여부를 value로(boolean) 갖는 "공실 객체" Vacancy 생성
+    const openDays = (closeAt - openAt) / 86400000 + 1;
+    let Vacancy = {};
+    for (let i = 1; i <= openDays; i++) {
+      let humanDate = new Date(openAt + 86400000 * (i - 1));
+      Vacancy[humanDate] = true;
+    }
+
     await Accommodation.updateOne(
       { accId },
       {
@@ -184,6 +195,7 @@ router.put("/:accId", authMiddleware, async (req, res) => {
           accName,
           openAt,
           closeAt,
+          Vacancy,
           address,
           desc1_hanmadi,
           desc2_surroundings,
@@ -194,9 +206,7 @@ router.put("/:accId", authMiddleware, async (req, res) => {
         },
       }
     );
-    res
-      .status(200)
-      .json({ message: "숙소 정보를 수정했습니다." });
+    res.status(200).json({ message: "숙소 정보를 수정했습니다." });
   } else {
     return res
       .status(400)
@@ -204,13 +214,12 @@ router.put("/:accId", authMiddleware, async (req, res) => {
   }
 });
 
-
 //<-----숙소 정보 삭제 API----->
 router.delete("/:accId", authMiddleware, async (req, res) => {
   const { accId } = req.params;
-  const userId = res.locals.user.userId; 
+  const userId = res.locals.user.userId;
   const existAccommodation = await Accommodation.findOne({ accId });
-  
+
   if (userId === existAccommodation["userId"]) {
     await Accommodation.deleteOne({ accId });
 
