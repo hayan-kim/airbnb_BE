@@ -53,18 +53,13 @@ app.use(express.urlencoded());
 app.use(requestMiddleware); 
 
 app.use('/api/users', [userRouter]);
-<<<<<<< HEAD
-app.use('/api/articles', [articleRouter]);
-app.use('/api/comments', [commentRouter]);
-app.use('/api/images',[imageRouter]);
-app.use('/api/reviews', [reviewRouter]);
-=======
+
 app.use('/api/accommodations', [accommodationRouter]);
 app.use('/api/reservations', [reservationRouter]);
 app.use('/api/images',[imageRouter]);
-
+app.use('/api/reviews', [reviewRouter]);
 app.use('/api/comment', [commentRouter]);
->>>>>>> main
+
 
 app.get('/', (req, res) => {    
     res.send('hello world');
