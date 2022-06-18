@@ -9,16 +9,22 @@ const authMiddleware = require("../middlewares/auth-middleware");
 
 
 // <---회원가입 API-->
-// frontend 요청으로 중복 ID, 중복 nickname 확인 API를 별도로 작성해서, 똑같은 코드가 반복되고 있음.
-// 만일 frontend 화면에서 회원가입 버튼 클릭 이전에 중복확인 버튼 클릭이 강제된다면 내 코드를 삭제해도 되지만
-// 그렇지 않다면 남겨둬야 한다.
-// userId: 3~10글자, 알파벳 대소문자, 숫자 가능
+// 로그인 배열을 이메일 형식으로 받게 만들어야한다.
+const postUsersSchema = Joi.object({
+  userId: Joi.string().pattern(new RegExp("^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$")).required(),
+  password: Joi.string().min(4).max(16).required(),
+  passwordCheck: Joi.string().min(4).max(16).required(),
+  name: Joi.string().required(),
+  birth: Joi.string().required(),
+  gender: Joi.string().required(),
+  reservations: Joi.string().required(),
+  accommodations: Joi.string().required(),
+});
 
 
 router.post("/signup", async (req, res) => {
   try {
-    const { userId, password, passwordCheck, name, birth, gender, reservations, accommodations} =
-      (req.body);
+    const { userId,password, passwordCheck, name, birth, gender, reservations, accommodations } = await postUsersSchema.validateAsync(req.body);
 
     if (password !== passwordCheck) {
       res.status(400).send({

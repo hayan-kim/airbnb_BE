@@ -106,7 +106,7 @@ router.put("/:reviewId", authMiddleware, async (req,res) =>{
          );
          res.status(200).json({ message: "리뷰를 수정했습니다." });
      }else{
-         return res.status(200).json({ errorMessage: "등록자만 수정할 수 있습니다." });
+         return res.status(400).json({ errorMessage: "등록자만 수정할 수 있습니다." });
      }
 });
 
