@@ -24,6 +24,7 @@ const userRouter = require('./routes/users');
 const articleRouter = require('./routes/articles');
 const commentRouter = require('./routes/comments');
 const imageRouter = require('./routes/images');
+const reviewRouter = require("./routes/reviews");
 
 // CORS 사용을 위한 옵션 설정. 허용할 주소들을 배열로 정의해둔다.
 // credentials: true 로 설정해둬야 인증에 관련된 요청들도 허용해줄 수 있다. 
@@ -49,10 +50,11 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(requestMiddleware); 
 
-app.use('/api/user', [userRouter]);
-app.use('/api/article', [articleRouter]);
-app.use('/api/comment', [commentRouter]);
-app.use('/api/image',[imageRouter]);
+app.use('/api/users', [userRouter]);
+app.use('/api/articles', [articleRouter]);
+app.use('/api/comments', [commentRouter]);
+app.use('/api/images',[imageRouter]);
+app.use('/api/reviews', [reviewRouter]);
 
 app.get('/', (req, res) => {    
     res.send('hello world');

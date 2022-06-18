@@ -13,20 +13,12 @@ const authMiddleware = require("../middlewares/auth-middleware");
 // 만일 frontend 화면에서 회원가입 버튼 클릭 이전에 중복확인 버튼 클릭이 강제된다면 내 코드를 삭제해도 되지만
 // 그렇지 않다면 남겨둬야 한다.
 // userId: 3~10글자, 알파벳 대소문자, 숫자 가능
-// nickname: 3~10글자, 알파벳 대소문자, 숫자, 한글 가능
-const postUsersSchema = Joi.object({
-  userId: Joi.string().pattern(new RegExp("^[a-zA-Z0-9]{3,10}$")).required(),
-  nickname: Joi.string()
-    .pattern(new RegExp("^[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣]{3,10}$"))
-    .required(),
-  password: Joi.string().min(4).max(16).required(),
-  passwordCheck: Joi.string().min(4).max(16).required(),
-});
+
 
 router.post("/signup", async (req, res) => {
   try {
-    const { userId, nickname, password, passwordCheck } =
-      await postUsersSchema.validateAsync(req.body);
+    const { userId, password, passwordCheck, name, birth, gender, reservations, accommodations} =
+      (req.body);
 
     if (password !== passwordCheck) {
       res.status(400).send({
@@ -41,16 +33,6 @@ router.post("/signup", async (req, res) => {
     if (dup_id.length) {
       res.status(400).send({
         errorMessage: "중복된 아이디입니다.",
-      });
-      return;
-    }
-
-    const dup_nickname = await User.find({
-      $or: [{ nickname }],
-    });
-    if (dup_nickname.length) {
-      res.status(400).send({
-        errorMessage: "중복된 닉네임입니다.",
       });
       return;
     }
@@ -82,9 +64,13 @@ router.post("/signup", async (req, res) => {
 
     const user = new User({
       userId,
-      nickname,
       password: crypt_password,
       salt,
+      name,
+      birth,
+      gender,
+      reservations,
+      accommodations,
     }); 
     await user.save();
 
@@ -122,41 +108,6 @@ router.post("/dup_userId", async (req, res) => {
       });
     }
 
-  } catch (err) {
-    console.log(err);
-    res.status(400).json({
-      errorMessage: "회원가입 형식을 확인해주세요.",
-    });
-  }
-});
-
-
-// <---nickname 중복확인 API-->
-const postDupNicknameSchema = Joi.object({  
-  nickname: Joi.string()
-    .pattern(new RegExp("^[a-zA-Z0-9ㄱ-ㅎㅏ-ㅣ가-힣]{3,10}$"))
-    .required(),
-});
-
-router.post("/dup_nickname", async (req, res) => {
-  try {
-    const { nickname } = await postDupNicknameSchema.validateAsync(req.body);
-   
-    const dup_nickname = await User.find({
-      $or: [{ nickname }],
-    });
-
-    if (dup_nickname.length) {
-      res.status(400).json({
-        errorMessage: "중복된 닉네임입니다.",
-      });
-      return;
-    } else {
-      res.status(200).json({
-        message: "사용 가능한 닉네임입니다.",
-      });
-    }
-    
   } catch (err) {
     console.log(err);
     res.status(400).json({
@@ -226,7 +177,7 @@ router.get("/me", authMiddleware, async (req, res) => {
   // res.locals에는 user DB로 관리되는 모든 값이 들어 있다. 
   // password, likes[] 등은 유저 확인에는 불필요하므로, userId와 nickname만 리턴한다. 
   const { user } = res.locals;
-  const userInfo = { userId: user.userId, nickname: user.nickname };
+  const userInfo = { userId: user.userId};
   console.log(userInfo);
   res.send({
     userInfo,
