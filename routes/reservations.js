@@ -8,19 +8,21 @@ const router = express.Router();
 
 //<-----사용자 예약 조회 (마이페이지)----->
 
-router.get("/:userId",  async (req, res) => {  //authMiddleware,
+router.get("/:userId", async (req, res) => {
+  //authMiddleware,
+
   const userId = req.params;
-  
-  //게시글들을 내림차순으로 정렬해서 보여준다.
   const reservations = await Reservation.find({ userId });
+
   res.json({
     reservations,
   });
 });
 
 //<-----예약 상세 조회(?)----->
-router.get("/:revId",  async (req, res) => {   //authMiddleware,
-  
+router.get("/:revId", async (req, res) => {
+  //authMiddleware,
+
   const revId = req.params;
   const reservation = await Reservation.findOne({ revId });
 
@@ -30,7 +32,8 @@ router.get("/:revId",  async (req, res) => {   //authMiddleware,
 });
 
 //<-----예약 작성 API----->
-router.post("/:accId",  async (req, res) => { //authMiddleware,
+router.post("/:accId", async (req, res) => {
+  //authMiddleware,
   const { accId } = req.params;
   const accommodation = await Accommodation.findOne({ accId });
   const accName = accommodation["accName"];
@@ -60,8 +63,10 @@ router.post("/:accId",  async (req, res) => { //authMiddleware,
   );
 
   // 예약일 배열을 순회하며, 현재 예약하려는 숙소의 예약가능일 객체(Vacancy)를 검사하여 false가 하나라도 있는지 확인한다.
-  let availability = requestDates.every(item => accommodation["Vacancy"][item])  
-  
+  let availability = requestDates.every(
+    (item) => accommodation["Vacancy"][item]
+  );
+
   if (!availability) {
     return res.status(400).json({
       errorMessage: "예약이 불가능한 날짜가 포함되었습니다.",
@@ -103,35 +108,39 @@ router.post("/:accId",  async (req, res) => { //authMiddleware,
 });
 
 // <-----예약 취소 API----->
-// 지금 구현된 상태는 예약 취소하면 그냥 예약이 사라질 뿐, 해당 숙소 페이지에 예약 이전 상태가 부활하지 않음. (예약불가 상태가 됨)
-// 캘린더 구현되는 거 보고 어디까지 만들 수 있을지 설계할 것.
-router.delete("/:revId",  async (req, res) => { //authMiddleware,
+router.delete("/:revId", async (req, res) => {
+  //authMiddleware,
   const { revId } = req.params;
   const { userId } = req.body; // 로그인 기능 되면 이 행은 삭제할 것
   //const userId = res.locals.user.userId;
   const reservation = await Reservation.findOne({ revId });
-  let accommodation = await Accommodation.findOne( { accId: reservation["accId"] } )
-  
+  let accommodation = await Accommodation.findOne({
+    accId: reservation["accId"],
+  });
+
   if (userId === reservation["userId"]) {
     //예약했던 날짜들을 요소로 갖는 배열 생성
-    let Dates = new Array( ( reservation["checkOut"] - reservation["checkIn"] ) / 86400000 + 1).fill("init");     
-    milliseconds = Date.parse(reservation["checkIn"])   
-    let requestDates = Dates.map((item,index) => new Date(milliseconds + 86400000 * index) )       
-    
-    //예약했던 날짜들을 숙소정보 DB의 Vacancy 객체에서 "true"로 돌려줌    
-    requestDates.forEach(async (item) =>{
-      (accommodation["Vacancy"][item] = true)
-    } );            
-    
+    let Dates = new Array(
+      (reservation["checkOut"] - reservation["checkIn"]) / 86400000 + 1
+    ).fill("init");
+    let requestDates = Dates.map(
+      (item, index) =>
+        new Date(Date.parse(reservation["checkIn"]) + 86400000 * index)
+    );
+
+    //예약했던 날짜들을 숙소정보 DB의 Vacancy 객체에서 "true"로 돌려줌
+    requestDates.forEach(async (item) => {
+      accommodation["Vacancy"][item] = true;
+    });
+
     await Accommodation.updateOne(
-    { accId: reservation["accId"] },
-    { $set: { Vacancy: accommodation["Vacancy"] } }
+      { accId: reservation["accId"] },
+      { $set: { Vacancy: accommodation["Vacancy"] } }
     );
 
     // 예약 정보를 DB에서 삭제함.
     await Reservation.deleteOne({ revId });
     res.status(200).json({ message: "예약을 취소하셨습니다." });
-
   } else {
     res.status(401).json({ message: "예약자만 취소할 수 있습니다." });
   }
