@@ -18,7 +18,7 @@ aws.config.update({
 
 
     //리뷰 조회
-    router.get("/accId", async (req,res) => {
+    router.get("/:accId", async (req,res) => {
         const { accId } = req.params
         const review = await Review.find().exec();
         res.json({
@@ -111,11 +111,13 @@ router.put("/:reviewId", authMiddleware, async (req,res) =>{
 });
 
 //리뷰 삭제
-router.delete("/reviewId", authMiddleware, async (req,res) => {
+//일단 제대로 메칭이 안되는거 같다.
+
+router.delete("/:reviewId", authMiddleware, async (req,res) => {
     const { reviewId } = req.params;
     const userId = res.locals.user.userId; 
     const existreview = await Review.findOne({ reviewId });
-
+    console.log( reviewId,userId,existreview )
     if(userId === existreview["userId"]){
         await Review.deleteOne({ reviewId });
 

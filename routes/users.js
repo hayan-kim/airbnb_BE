@@ -132,7 +132,7 @@ const postAuthSchema = Joi.object({
 router.post("/login", async (req, res) => {
   try {
     //사용자가 입력하는 password는 암호화 이전의 값임. Joi로 validation 부터 검사. 
-    const { userId, password } = await postAuthSchema.validateAsync(req.body); 
+    const { userId, password } = req.body; 
     const existUser = await User.findOne({ userId });
 
     if (!existUser) {

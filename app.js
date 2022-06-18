@@ -53,11 +53,19 @@ app.use(express.urlencoded());
 app.use(requestMiddleware); 
 
 app.use('/api/users', [userRouter]);
+<<<<<<< HEAD
+
+=======
+>>>>>>> 8856a2de20b5905636f53869227f480f6afac4b3
 app.use('/api/accommodations', [accommodationRouter]);
 app.use('/api/reservations', [reservationRouter]);
 app.use('/api/images',[imageRouter]);
 app.use('/api/reviews', [reviewRouter]);
 app.use('/api/comment', [commentRouter]);
+<<<<<<< HEAD
+
+=======
+>>>>>>> 8856a2de20b5905636f53869227f480f6afac4b3
 
 app.get('/', (req, res) => {    
     res.send('hello world');
