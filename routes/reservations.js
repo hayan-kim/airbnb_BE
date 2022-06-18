@@ -30,13 +30,13 @@ router.get("/:revId", authMiddleware, async (req, res) => {
 });
 
 //<-----예약 작성 API----->
-router.post("/:accId", authMiddleware, async (req, res) => {
+router.post("/:accId", async (req, res) => {  //authMiddleware, 
   
   const { accId } = req.params;
   const accommodation = await Accommodation.findOne({ accId });
   const accName = accommodation["accName"];
-  const { checkIn, checkOut, guests, charge, totalCharge } = req.body; 
-  const userId = res.locals.user.userId;
+  const { userId, checkIn, checkOut, guests, charge, totalCharge } = req.body; //userId 로그인 되면 빼기
+  //const userId = res.locals.user.userId;
 
   if (!checkIn || !checkOut || !guests || !charge || !totalCharge) {
     return res.status(400).json({
@@ -60,7 +60,7 @@ router.post("/:accId", authMiddleware, async (req, res) => {
     (item, index) => (item = new Date(checkIn + 86400000 * index))
   );
 
-  // 예약일 배열을 순회하며, 현재 예약하려는 숙소의 예약가능일 객체(Vacancy)를 검사하여 false가 하나라도 있는지 확인한다.
+  // 예약일 배열의 날짜들 중에서, 예약 대상 숙소의 예약가능일 객체(Vacancy)에 false로 표기된 날짜가 있는지 검사한다.
   let availability = requestDates.every(
     (item) => accommodation["Vacancy"][item]
   );
@@ -106,10 +106,11 @@ router.post("/:accId", authMiddleware, async (req, res) => {
 });
 
 // <-----예약 취소 API----->
-router.delete("/:revId", authMiddleware, async (req, res) => {
+router.delete("/:revId",  async (req, res) => { //authMiddleware,
   
   const { revId } = req.params;
-  const userId = res.locals.user.userId;
+  // const userId = res.locals.user.userId;
+  const {userId} = req.body; // 로그인 사용시 제거할 것
   const reservation = await Reservation.findOne({ revId });
   let accommodation = await Accommodation.findOne({
     accId: reservation["accId"],
@@ -120,13 +121,13 @@ router.delete("/:revId", authMiddleware, async (req, res) => {
     let Dates = new Array(
       (reservation["checkOut"] - reservation["checkIn"]) / 86400000 + 1
     ).fill("init");
-    let requestDates = Dates.map(
+    let reservedDates = Dates.map(
       (item, index) =>
         new Date(Date.parse(reservation["checkIn"]) + 86400000 * index)
     );
 
     // 예약했던 날짜들을 숙소정보 DB의 Vacancy 객체에서 "true"로 돌려줌
-    requestDates.forEach(async (item) => {
+    reservedDates.forEach((item) => {
       accommodation["Vacancy"][item] = true;
     });
 
