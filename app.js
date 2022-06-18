@@ -26,6 +26,7 @@ const reservationRouter = require('./routes/reservations');
 
 const commentRouter = require('./routes/comments');
 const imageRouter = require('./routes/images');
+const reviewRouter = require("./routes/reviews");
 
 // CORS 사용을 위한 옵션 설정. 허용할 주소들을 배열로 정의해둔다.
 // credentials: true 로 설정해둬야 인증에 관련된 요청들도 허용해줄 수 있다. 
@@ -55,7 +56,7 @@ app.use('/api/users', [userRouter]);
 app.use('/api/accommodations', [accommodationRouter]);
 app.use('/api/reservations', [reservationRouter]);
 app.use('/api/images',[imageRouter]);
-
+app.use('/api/reviews', [reviewRouter]);
 app.use('/api/comment', [commentRouter]);
 
 app.get('/', (req, res) => {    

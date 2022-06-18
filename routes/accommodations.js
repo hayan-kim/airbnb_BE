@@ -1,7 +1,7 @@
 const express = require("express");
 const authMiddleware = require("../middlewares/auth-middleware");
 const User = require("../models/user");
-const Accommodation = require("../models/accommodation");
+const Accommodations = require("../models/accommodation");
 const Images = require("../models/image");
 const Counters = require("../models/counter");
 const router = express.Router();
@@ -17,7 +17,7 @@ aws.config.update({
 //<-----전체 숙소 리스트 조회 API----->
 router.get("/", async (req, res) => {
   //숙소들을 모두 보여준다.
-  const accommodations = await Accommodation.find().exec();
+  const accommodations = await Accommodations.find().exec();
   res.json({
     accommodations,
   });
@@ -26,7 +26,7 @@ router.get("/", async (req, res) => {
 //<-----기간으로 검색  API----->
 router.get("/searchByPeriod", async (req, res) => {
   const { tripStart, tripEnd } = req.body;
-  const targetAccommodations = await Accommodation.find({
+  const targetAccommodations = await Accommodations.find({
     $and: [{ openAt: { $lte: tripStart } }, { closeAt: { $gte: tripEnd } }],
   });
   res.json({
@@ -37,7 +37,7 @@ router.get("/searchByPeriod", async (req, res) => {
 //<-----숙소정보 상세 조회 API----->
 router.get("/:accId", async (req, res) => {
   const { accId } = req.params;
-  const accommodation = await Accommodation.findOne({ accId });
+  const accommodation = await Accommodations.findOne({ accId });
   res.json({
     accommodation,
   });
@@ -62,9 +62,9 @@ router.post("/", authMiddleware, async (req, res) => {
   } = req.body;
 
   //accId를 자동으로 생성하며, 1씩 증가하게 카운팅해준다.
-  let counter = await Counters.findOne({ name: "Accommodation" }).exec();
+  let counter = await Counters.findOne({ name: "Accommodations" }).exec();
   if (!counter) {
-    counter = await Counters.create({ name: "Accommodation", count: 0 });
+    counter = await Counters.create({ name: "Accommodations", count: 0 });
   }
   counter.count++;
   counter.save();
@@ -96,7 +96,7 @@ router.post("/", authMiddleware, async (req, res) => {
     Vacancy[humanDate] = true;
   }
 
-  await Accommodation.create({
+  await Accommodations.create({
     accId,
     userId,
     photos,
@@ -134,7 +134,7 @@ router.put("/:accId", authMiddleware, async (req, res) => {
     charge,
   } = req.body;
 
-  const existAccommodation = await Accommodation.findOne({ accId });
+  const existAccommodation = await Accommodations.findOne({ accId });
 
   if (
     !photos ||
@@ -182,7 +182,7 @@ router.put("/:accId", authMiddleware, async (req, res) => {
       Vacancy[humanDate] = true;
     }
 
-    await Accommodation.updateOne(
+    await Accommodations.updateOne(
       { accId },
       {
         $set: {
@@ -215,10 +215,10 @@ router.put("/:accId", authMiddleware, async (req, res) => {
 router.delete("/:accId", authMiddleware, async (req, res) => {
   const { accId } = req.params;
   const userId = res.locals.user.userId;
-  const existAccommodation = await Accommodation.findOne({ accId });
+  const existAccommodation = await Accommodations.findOne({ accId });
 
   if (userId === existAccommodation["userId"]) {
-    await Accommodation.deleteOne({ accId });
+    await Accommodations.deleteOne({ accId });
 
     // 해당 게시글과 함께 S3에 올렸던 이미지 파일도 삭제
     // .split은 bucket 내의 경로를 생성하기 위함.
