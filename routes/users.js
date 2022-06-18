@@ -17,8 +17,8 @@ const postUsersSchema = Joi.object({
   name: Joi.string().required(),
   birth: Joi.string().required(),
   gender: Joi.string().required(),
-  reservations: Joi.string().required(),
-  accommodations: Joi.string().required(),
+  reservations: Joi.array().required(),
+  accommodations: Joi.array().required(),
 });
 
 
@@ -181,7 +181,7 @@ router.post("/login", async (req, res) => {
 // <---유저정보조회(토큰 내용 확인) API-->
 router.get("/me", authMiddleware, async (req, res) => {
   // res.locals에는 user DB로 관리되는 모든 값이 들어 있다. 
-  // password, likes[] 등은 유저 확인에는 불필요하므로, userId와 nickname만 리턴한다. 
+
   const { user } = res.locals;
   const userInfo = { userId: user.userId};
   console.log(userInfo);
