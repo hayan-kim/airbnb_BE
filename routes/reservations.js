@@ -90,7 +90,7 @@ router.post("/:accId", authMiddleware, async (req, res) => {
   let reserveId = counter.count;
 
   // (3) DB에 예약정보를 등록한다.
-  const reservation = await Reservation.create({
+  const reservation = await Reservations.create({
     reserveId,
     accId,
     userId,
