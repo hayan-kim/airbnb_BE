@@ -30,12 +30,10 @@ const UserSchema = new mongoose.Schema({
         required: true,
     },
     reservations: {
-        type: Array,
-        required: true,
+        type: Array,        
     },
     accommodations: {
-        type: Array,
-        required: true,
+        type: Array,        
     },
 });
 
