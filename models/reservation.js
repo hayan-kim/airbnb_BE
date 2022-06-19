@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 
 const reservationSchema = mongoose.Schema({
-  revId: {
+  reserveId: {
     type: String,    
   },
   
