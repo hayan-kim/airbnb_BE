@@ -125,8 +125,8 @@ router.post("/dup_userId", async (req, res) => {
 
 // <---로그인 API-->
 const postAuthSchema = Joi.object({
-  userId: Joi.string().min(3).max(10).required(),
-  password: Joi.string().required(),
+  userId: Joistring().pattern(new RegExp("^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$")).required(),
+  password: Joi.string().pattern(new RegExp("^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z]{6,20}$")).required(),
 });
 
 router.post("/login", async (req, res) => {
