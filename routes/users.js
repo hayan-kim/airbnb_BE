@@ -17,14 +17,15 @@ const postUsersSchema = Joi.object({
   name: Joi.string().required(),
   birth: Joi.string().required(),
   gender: Joi.string(),
-  reservations: Joi.array(),
-  accommodations: Joi.array()
+  // reservations: Joi.array(),
+  // accommodations: Joi.array()
 });
 
 
 router.post("/signup", async (req, res) => {
   try {
-    const { userId,password, passwordCheck, name, birth, gender, reservations, accommodations } = await postUsersSchema.validateAsync(req.body);
+    // reservations, accommodations
+    const { userId,password, passwordCheck, name, birth, gender } = await postUsersSchema.validateAsync(req.body);
 
     if (password !== passwordCheck) {
       res.status(400).send({

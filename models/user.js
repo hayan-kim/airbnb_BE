@@ -28,12 +28,12 @@ const UserSchema = new mongoose.Schema({
     gender: {
         type: String,
     },
-    reservations: {
-        type: Array,        
-    },
-    accommodations: {
-        type: Array,
-    },
+    // reservations: {
+    //     type: Array,               
+    // },
+    // accommodations: {
+    //     type: Array,        
+    // },
 });
 
 
