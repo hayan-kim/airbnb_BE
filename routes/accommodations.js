@@ -50,6 +50,7 @@ router.post("/", authMiddleware, async (req, res) => {
   const userId = res.locals.user.userId;  
   const {    
     photos,
+    category,
     accName,
     openAt,
     closeAt,
@@ -73,6 +74,7 @@ router.post("/", authMiddleware, async (req, res) => {
 
   if (
     !photos ||
+    !category ||
     !accName ||
     !openAt ||
     !closeAt ||
@@ -101,6 +103,7 @@ router.post("/", authMiddleware, async (req, res) => {
     accId,
     userId,
     photos,
+    category,
     accName,
     openAt,
     closeAt,
@@ -123,6 +126,7 @@ router.put("/:accId", authMiddleware, async (req, res) => {
   const { accId } = req.params;
   const {    
     photos,
+    category,
     accName,
     openAt,
     closeAt,
@@ -139,6 +143,7 @@ router.put("/:accId", authMiddleware, async (req, res) => {
 
   if (
     !photos ||
+    !category ||
     !accName ||
     !openAt ||
     !closeAt ||
@@ -190,6 +195,7 @@ router.put("/:accId", authMiddleware, async (req, res) => {
           accId,
           userId,
           photos,
+          category,
           accName,
           openAt,
           closeAt,
