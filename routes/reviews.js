@@ -20,7 +20,7 @@ aws.config.update({
     //리뷰 조회
     router.get("/:accId", async (req,res) => {
         const { accId } = req.params;
-        const review = await Review.find({ accId });
+        const review = await Review.findOne({ accId });
         res.json({
             accId,
         });
@@ -29,7 +29,9 @@ aws.config.update({
   //리뷰 작성
   router.post("/:accId", authMiddleware, async (req,res) =>{
       const { accId } = req.params;
-      const userId = res.locals.user.userId; 
+      const userId = res.locals.user.userId;
+      const createdAt = new Date(); 
+      console.log(createdAt)
       const {
           photos,
           content,
@@ -63,6 +65,7 @@ aws.config.update({
         photos,
         content,
         stars,
+        createdAt,
     });
 
     res.status(200).json({ message: "리뷰작성을 완료하였습니다." })

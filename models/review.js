@@ -19,6 +19,10 @@ const ReviewSchema = mongoose.Schema({
     stars: {
         type: Number,
     },
+    createdAt: {
+        type: Date,
+        default: new Date(),
+    },
 });
 
 
