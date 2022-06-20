@@ -23,7 +23,8 @@ router.get("/", async (req, res) => {
   });
 });
 
-//<-----기간으로 검색  API----->
+//<-----기간으로 검색  API-----> 
+// 현재 SA의 API 문서에는 없는데 아무래도 추가하고 싶을 것 같음. 일단 기간 기준 검색부터 작성.
 router.get("/searchByPeriod", async (req, res) => {
   const { tripStart, tripEnd } = req.body;
   const targetAccommodations = await Accommodations.find({
