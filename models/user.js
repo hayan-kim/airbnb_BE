@@ -30,7 +30,7 @@ const UserSchema = new mongoose.Schema({
         required: true,
     },
     reservations: {
-        type: Array,
+        type: Array,        
     },
     accommodations: {
         type: Array,
