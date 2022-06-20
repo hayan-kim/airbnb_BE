@@ -49,7 +49,7 @@ router.get("/category/:category", async (req, res) => {
   const { category } = req.params;
   const accommodation = await Accommodations.find({ category });
   res.json({
-    accommodation,
+    accommodations,
   });
 });
 
