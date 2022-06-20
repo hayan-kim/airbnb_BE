@@ -44,6 +44,16 @@ router.get("/:accId", async (req, res) => {
   });
 });
 
+//<-----숙소정보 카테고리별 조회 API----->
+router.get("/category/:category", async (req, res) => {
+  const { category } = req.params;
+  const accommodation = await Accommodations.find({ category });
+  res.json({
+    accommodation,
+  });
+});
+
+
 //<-----숙소 정보 작성 API----->
 router.post("/", authMiddleware, async (req, res) => {   
   //작성자의 userId를 숙소 정보와 함께 DB에 저장
@@ -83,7 +93,7 @@ router.post("/", authMiddleware, async (req, res) => {
     !desc2_surroundings ||
     !desc3_notice ||
     !desc4_basics ||
-    !facilities ||
+    // !facilities ||
     !charge
   ) {
     return res.status(400).json({
@@ -152,7 +162,7 @@ router.put("/:accId", authMiddleware, async (req, res) => {
     !desc2_surroundings ||
     !desc3_notice ||
     !desc4_basics ||
-    !facilities ||
+    // !facilities ||
     !charge
   ) {
     return res.status(400).json({
