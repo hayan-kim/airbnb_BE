@@ -12,8 +12,8 @@ const authMiddleware = require("../middlewares/auth-middleware");
 // 로그인 배열을 이메일 형식으로 받게 만들어야한다.
 const postUsersSchema = Joi.object({
   userId: Joi.string().pattern(new RegExp("^[0-9a-zA-Z]([-_.0-9a-zA-Z])*@[0-9a-zA-Z]([-_.0-9a-zA-Z])*.([a-zA-Z])*")).required(),
-  password: Joi.string().pattern(new RegExp("^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z]{6,20}$")).required(),
-  passwordCheck: Joi.string().pattern(new RegExp("^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z]{6,20}$")).required(),
+  password: Joi.string().min(6).max(20).required(),
+  passwordCheck: Joi.string().min(6).max(20).required(),
   name: Joi.string().required(),
   birth: Joi.string().required(),
   gender: Joi.string(),
@@ -92,7 +92,7 @@ router.post("/signup", async (req, res) => {
 
 // <---userId 중복확인 API-->
 const postDupIdSchema = Joi.object({
-  userId: Joi.string().pattern(new RegExp("^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$")).required()
+  userId: Joi.string().pattern(new RegExp("^[0-9a-zA-Z]([-_.0-9a-zA-Z])*@[0-9a-zA-Z]([-_.0-9a-zA-Z])*.([a-zA-Z])*")).required()
 });
 
 router.post("/dup_userId", async (req, res) => {
