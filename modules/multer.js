@@ -24,7 +24,7 @@ aws.config.update({
 //   })
 // });
 
-const s3 = new AWS.S3();
+const s3 = new aws.S3();
 
 const allowedExtensions = ['.png', '.jpg', '.jpeg', '.bmp'];
 
@@ -39,4 +39,6 @@ const update = multer({
 })
 
 
-module.exports = upload;
+
+// multer 관련 모듈이 작성 미완료라 서버가 제대로 작동하지 않아서 (로컬에서 node app.js 해보시면 서버 제대로 안켜짐) 일단 주석처리 합니다.
+// module.exports = upload;
