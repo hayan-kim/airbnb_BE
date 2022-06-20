@@ -6,8 +6,7 @@ const Images = require("../models/image");
 const Counters = require("../models/counter");
 const router = express.Router();
 
-//<-----사용자 예약 조회 (마이페이지)----->
-
+//<-----사용자 예약 조회 (마이페이지) API----->
 router.get("/:userId", authMiddleware, async (req, res) => {
   
   const userId = req.params;
@@ -18,7 +17,8 @@ router.get("/:userId", authMiddleware, async (req, res) => {
   });
 });
 
-//<-----예약 상세 조회(?)----->
+
+//<-----예약 상세 조회(?) API----->
 router.get("/:reserveId", authMiddleware, async (req, res) => {
   
   const reserveId = req.params;
@@ -29,7 +29,8 @@ router.get("/:reserveId", authMiddleware, async (req, res) => {
   });
 });
 
-//<-----예약 작성 API----->
+
+//<-----예약 작성 API API----->
 router.post("/:accId", authMiddleware, async (req, res) => {   
   
   const { accId } = req.params;
@@ -104,6 +105,7 @@ router.post("/:accId", authMiddleware, async (req, res) => {
 
   res.status(200).json({ message: "예약하셨습니다." });
 });
+
 
 // <-----예약 취소 API----->
 router.delete("/:reserveId", authMiddleware, async (req, res) => { 
