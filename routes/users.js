@@ -16,7 +16,7 @@ const postUsersSchema = Joi.object({
   passwordCheck: Joi.string().min(4).max(16).required(),
   name: Joi.string().required(),
   birth: Joi.string().required(),
-  gender: Joi.string().required(),
+  gender: Joi.string(),
   reservations: Joi.array(),
   accommodations: Joi.array()
 });
