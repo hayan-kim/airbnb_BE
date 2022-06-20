@@ -47,7 +47,7 @@ router.get("/:accId", async (req, res) => {
 //<-----숙소정보 카테고리별 조회 API----->
 router.get("/category/:category", async (req, res) => {
   const { category } = req.params;
-  const accommodation = await Accommodations.find({ category });
+  const accommodations = await Accommodations.find({ category });
   res.json({
     accommodations,
   });
