@@ -20,9 +20,9 @@ aws.config.update({
     //리뷰 조회
     router.get("/:accId", async (req,res) => {
         const { accId } = req.params;
-        const review = await Review.findOne({ accId });
+        const review = await Review.find({ accId });
         res.json({
-            accId,
+            review,
         });
     });
 
