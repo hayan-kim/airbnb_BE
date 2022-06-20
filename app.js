@@ -56,6 +56,7 @@ app.use('/api/reservations', [reservationRouter]);
 app.use('/api/images',[imageRouter]);
 app.use('/api/reviews', [reviewRouter]);
 
+
 app.get('/', (req, res) => {    
     res.send('hello world');
 });

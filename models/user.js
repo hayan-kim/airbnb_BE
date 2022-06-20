@@ -33,7 +33,7 @@ const UserSchema = new mongoose.Schema({
         type: Array,        
     },
     accommodations: {
-        type: Array,        
+        type: Array,
     },
 });
 
