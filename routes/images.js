@@ -19,8 +19,10 @@ const upload = require("../modules/multer");
 //   res.status(200).json({ imageUrl });
 // });
 
-router.post("/", upload.single("image"), (req,res) => {
-  res.send("good!")
-});
+
+// multer 관련 모듈이 작성 미완료라 서버가 제대로 작동하지 않아서 (로컬에서 node app.js 해보시면 서버 제대로 안켜짐) 일단 주석처리 합니다.
+// router.post("/", upload.single("image"), (req,res) => {
+//   res.send("good!")
+// });
 
 module.exports = router;
