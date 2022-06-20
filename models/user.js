@@ -31,11 +31,9 @@ const UserSchema = new mongoose.Schema({
     },
     reservations: {
         type: Array,
-        required: true,
     },
     accommodations: {
         type: Array,
-        required: true,
     },
 });
 

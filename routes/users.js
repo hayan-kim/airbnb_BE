@@ -17,8 +17,8 @@ const postUsersSchema = Joi.object({
   name: Joi.string().required(),
   birth: Joi.string().required(),
   gender: Joi.string().required(),
-  reservations: Joi.array().required(),
-  accommodations: Joi.array().required(),
+  reservations: Joi.array(),
+  accommodations: Joi.array(),
 });
 
 
@@ -92,7 +92,7 @@ router.post("/signup", async (req, res) => {
 
 // <---userId 중복확인 API-->
 const postDupIdSchema = Joi.object({
-  userId: Joi.string().min(3).max(10).required(),
+  userId: Joi.string().pattern(new RegExp("^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$")).required()
 });
 
 router.post("/dup_userId", async (req, res) => {
