@@ -51,8 +51,6 @@ app.use(express.urlencoded());
 app.use(requestMiddleware); 
 
 app.use('/api/users', [userRouter]);
-
-
 app.use('/api/accommodations', [accommodationRouter]);
 app.use('/api/reservations', [reservationRouter]);
 app.use('/api/images',[imageRouter]);

@@ -18,7 +18,7 @@ const postUsersSchema = Joi.object({
   birth: Joi.string().required(),
   gender: Joi.string().required(),
   reservations: Joi.array(),
-  accommodations: Joi.array(),
+  accommodations: Joi.array()
 });
 
 
