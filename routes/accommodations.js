@@ -56,7 +56,7 @@ router.get("/category/:category", async (req, res) => {
 
 //<-----숙소 정보 작성 API----->
 
-function createVacancy (openDays, openAt) {
+async function createVacancy (openDays, openAt) {
   let Vacancy = {};
 
   for (let i = 1; i <= openDays; i++) {
