@@ -35,6 +35,7 @@ const accommodationSchema = mongoose.Schema({
   Vacancy: {
     type: Object,    
     required: true,
+    default: {},
   },
 
   address: {
