@@ -28,7 +28,7 @@ const reviewRouter = require("./routes/reviews");
 
 // CORS 사용을 위한 옵션 설정. 허용할 주소들을 배열로 정의해둔다.
 // credentials: true 로 설정해둬야 인증에 관련된 요청들도 허용해줄 수 있다. 
-const domains = ["http://localhost:3000"];
+const domains = ["http://localhost:3000", "http://spartacodingclub.s3-website.ap-northeast-2.amazonaws.com"];
 const corsOptions = {
   origin: function(origin, callback){
   	const isTrue = domains.indexOf(origin) !== -1;
