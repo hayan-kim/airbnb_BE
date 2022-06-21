@@ -55,6 +55,19 @@ router.get("/category/:category", async (req, res) => {
 
 
 //<-----숙소 정보 작성 API----->
+
+function createVacancy (openDays, openAt) {
+  let Vacancy = {};
+
+  for (let i = 1; i <= openDays; i++) {
+    let humanDate = new Date(openAt + 86400000 * (i - 1));
+    console.log (humanDate);
+    Vacancy[humanDate] = true;
+  }
+  return Vacancy;
+}
+
+
 router.post("/", authMiddleware, async (req, res) => {   
   //작성자의 userId를 숙소 정보와 함께 DB에 저장
   const userId = res.locals.user.userId;  
@@ -72,15 +85,6 @@ router.post("/", authMiddleware, async (req, res) => {
     facilities,
     charge,
   } = req.body;
-
-  //accId를 자동으로 생성하며, 1씩 증가하게 카운팅해준다.
-  let counter = await Counters.findOne({ name: "Accommodations" }).exec();
-  if (!counter) {
-    counter = await Counters.create({ name: "Accommodations", count: 0 });
-  }
-  counter.count++;
-  counter.save();
-  let accId = counter.count;
 
   if (
     !photos ||
@@ -101,16 +105,27 @@ router.post("/", authMiddleware, async (req, res) => {
     });
   }
 
+  //accId를 자동으로 생성하며, 1씩 증가하게 카운팅해준다.
+  let counter = await Counters.findOne({ name: "Accommodations" }).exec();
+  if (!counter) {
+    counter = await Counters.create({ name: "Accommodations", count: 0 });
+  }
+  counter.count++;
+  counter.save();
+  let accId = counter.count;
+
   // 예약가능기간(openAt ~ closeAt)의 각 날짜들을 key로, 예약가능여부를 value로(boolean) 갖는 "공실 객체" Vacancy 생성
   const openDays = (closeAt - openAt) / 86400000 + 1;
-  let Vacancy = {};
+  let Vacancy = createVacancy(openDays, openAt);
   
-  for (let i = 1; i <= openDays; i++) {
-    let humanDate = new Date(openAt + 86400000 * (i - 1));
-    console.log (humanDate);
-    Vacancy[humanDate] = true;
-  }
+  // for (let i = 1; i <= openDays; i++) {
+  //   let humanDate = new Date(openAt + 86400000 * (i - 1));
+  //   console.log (humanDate);
+  //   Vacancy[humanDate] = true;
+  // }
   
+  console.log(Vacancy)
+
   await Accommodations.create({
     accId,
     userId,
