@@ -107,13 +107,10 @@ router.post("/", authMiddleware, async (req, res) => {
   let Vacancy = {}  
 
   for (let i = 1; i <= openDays; i++) {
-    let humanDate = new Date(openAt + 86400000 * (i - 1));
-    console.log (humanDate);
+    let humanDate = new Date(openAt + 86400000 * (i - 1));    
     Vacancy[humanDate] = true;
   }
   
-  console.log(Vacancy)
-
   await Accommodations.create({
     accId,
     userId,
