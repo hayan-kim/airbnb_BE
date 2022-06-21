@@ -22,17 +22,17 @@ const UserSchema = new mongoose.Schema({
         required: true,
     },
     birth: {
-        type: Date,
+        type: String,
         required: true,
     },
     gender: {
         type: String,
     },
     reservations: {
-        type: Array,        
+        type: Array,               
     },
     accommodations: {
-        type: Array,
+        type: Array,        
     },
 });
 

@@ -23,8 +23,8 @@ const postUsersSchema = Joi.object({
 
 
 router.post("/signup", async (req, res) => {
-  try {
-    const { userId,password, passwordCheck, name, birth, gender, reservations, accommodations } = await postUsersSchema.validateAsync(req.body);
+  try {    
+    const { userId,password, passwordCheck, name, birth, gender, reservations, accommodations } = await postUsersSchema.validateAsync(req.body);    
 
     if (password !== passwordCheck) {
       res.status(400).send({

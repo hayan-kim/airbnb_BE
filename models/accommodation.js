@@ -9,6 +9,10 @@ const accommodationSchema = mongoose.Schema({
     type:String,
   },
 
+  category:{
+    type:String,
+  },
+
   photos: {
     type: Array,    
   },

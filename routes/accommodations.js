@@ -44,12 +44,23 @@ router.get("/:accId", async (req, res) => {
   });
 });
 
+//<-----숙소정보 카테고리별 조회 API----->
+router.get("/category/:category", async (req, res) => {
+  const { category } = req.params;
+  const accommodations = await Accommodations.find({ category });
+  res.json({
+    accommodations,
+  });
+});
+
+
 //<-----숙소 정보 작성 API----->
 router.post("/", authMiddleware, async (req, res) => {   
   //작성자의 userId를 숙소 정보와 함께 DB에 저장
   const userId = res.locals.user.userId;  
   const {    
     photos,
+    category,
     accName,
     openAt,
     closeAt,
@@ -73,6 +84,7 @@ router.post("/", authMiddleware, async (req, res) => {
 
   if (
     !photos ||
+    !category ||
     !accName ||
     !openAt ||
     !closeAt ||
@@ -81,7 +93,7 @@ router.post("/", authMiddleware, async (req, res) => {
     !desc2_surroundings ||
     !desc3_notice ||
     !desc4_basics ||
-    !facilities ||
+    // !facilities ||
     !charge
   ) {
     return res.status(400).json({
@@ -101,6 +113,7 @@ router.post("/", authMiddleware, async (req, res) => {
     accId,
     userId,
     photos,
+    category,
     accName,
     openAt,
     closeAt,
@@ -123,6 +136,7 @@ router.put("/:accId", authMiddleware, async (req, res) => {
   const { accId } = req.params;
   const {    
     photos,
+    category,
     accName,
     openAt,
     closeAt,
@@ -139,6 +153,7 @@ router.put("/:accId", authMiddleware, async (req, res) => {
 
   if (
     !photos ||
+    !category ||
     !accName ||
     !openAt ||
     !closeAt ||
@@ -147,7 +162,7 @@ router.put("/:accId", authMiddleware, async (req, res) => {
     !desc2_surroundings ||
     !desc3_notice ||
     !desc4_basics ||
-    !facilities ||
+    // !facilities ||
     !charge
   ) {
     return res.status(400).json({
@@ -190,6 +205,7 @@ router.put("/:accId", authMiddleware, async (req, res) => {
           accId,
           userId,
           photos,
+          category,
           accName,
           openAt,
           closeAt,
