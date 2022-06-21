@@ -116,7 +116,7 @@ router.post("/", authMiddleware, async (req, res) => {
 
   // 예약가능기간(openAt ~ closeAt)의 각 날짜들을 key로, 예약가능여부를 value로(boolean) 갖는 "공실 객체" Vacancy 생성
   const openDays = (closeAt - openAt) / 86400000 + 1;
-  let Vacancy = createVacancy(openDays, openAt);
+  let Vacancy = await createVacancy(openDays, openAt);
   
   // for (let i = 1; i <= openDays; i++) {
   //   let humanDate = new Date(openAt + 86400000 * (i - 1));
