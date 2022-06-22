@@ -103,24 +103,16 @@ router.post("/", authMiddleware, async (req, res) => {
   let accId = counter.count;
 
   // 예약가능기간(openAt ~ closeAt)의 각 날짜들을 key로, 예약가능여부를 value로(boolean) 갖는 "공실 객체" Vacancy 생성
-
-  const openMilliseconds = new Date(openAt)
-  const closeMilliseconds = new Date(closeAt)
-
-  const openDays = (closeMilliseconds - openMilliseconds) / 86400000 + 1;  
-
-  console.log (openDays);
+  const openAtDate = new Date(openAt)
+  const closeAtDate = new Date(closeAt)
+  const openDays = (closeAtDate - openAtDate) / 86400000 + 1;  
   let Vacancy = {}    
 
   for (let i = 0; i < openDays; i++) {
-    let plusMilliseconds = 86400000 * i
-    console.log (plusMilliseconds)
-    let humanDate = new Date(Date.parse(openMilliseconds) + plusMilliseconds);    
-    console.log (humanDate)
+    let plusMilliseconds = 86400000 * i    
+    let humanDate = new Date(Date.parse(openAtDate) + plusMilliseconds);        
     Vacancy[humanDate] = true;    
-  }
-
-  console.log (Vacancy);
+  }  
   
   await Accommodations.create({
     accId,
@@ -204,12 +196,16 @@ router.put("/:accId", authMiddleware, async (req, res) => {
     //현재 로그인한 사용자가 숙소를 등록한 사용자라면 숙소 정보 수정을 실행한다.
 
     // 예약가능기간(openAt ~ closeAt)의 각 날짜들을 key로, 예약가능여부를 value로(boolean) 갖는 "공실 객체" Vacancy 생성
-    const openDays = (closeAt - openAt) / 86400000 + 1;
-    let Vacancy = {};
-    for (let i = 1; i <= openDays; i++) {
-      let humanDate = new Date(openAt + 86400000 * (i - 1));
-      Vacancy[humanDate] = true;
-    }
+    const openAtDate = new Date(openAt)
+    const closeAtDate = new Date(closeAt)
+    const openDays = (closeAtDate - openAtDate) / 86400000 + 1;  
+    let Vacancy = {}    
+
+    for (let i = 0; i < openDays; i++) {
+      let plusMilliseconds = 86400000 * i    
+      let humanDate = new Date(Date.parse(openAtDate) + plusMilliseconds);        
+      Vacancy[humanDate] = true;    
+    }  
 
     await Accommodations.updateOne(
       { accId },
