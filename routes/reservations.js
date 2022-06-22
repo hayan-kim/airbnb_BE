@@ -127,7 +127,7 @@ router.delete("/:reserveId", authMiddleware, async (req, res) => {
         new Date(Date.parse(reservation["checkIn"]) + 86400000 * index)
     );
 
-    // 예약했던 날짜들을 숙소정보 DB의 Vacancy 객체에서 "true"로 돌려줌
+    // 예약했던 날짜들을 숙소정보 DB의 Vacancy 객체에서 "true"로 다시 변경함.
     reservedDates.forEach((item) => {
       accommodation["Vacancy"][item] = true;
     });
