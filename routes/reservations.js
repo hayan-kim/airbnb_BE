@@ -56,7 +56,8 @@ router.post("/:accId", authMiddleware, async (req, res) => {
   }
 
   // 예약 기간의 각 날짜들을 요소로 갖는 "예약일 배열"을 생성한다.
-  let Dates = new Array((checkOut - checkIn) / 86400000 + 1).fill("init");
+  let requestDays = (new Date(checkOut) - new Date(checkIn)) / 86400000 + 1
+  let Dates = new Array(requestDays).fill("init");
   let requestDates = Dates.map(
     (item, index) => (item = new Date(checkIn + 86400000 * index))
   );
@@ -119,9 +120,8 @@ router.delete("/:reserveId", authMiddleware, async (req, res) => {
 
   if (userId === reservation["userId"]) {
     // 예약했던 날짜들을 요소로 갖는 배열 생성
-    let Dates = new Array(
-      (reservation["checkOut"] - reservation["checkIn"]) / 86400000 + 1
-    ).fill("init");
+    let reservedDays = ( new Date (reservation["checkOut"]) - new Date(reservation["checkIn"]) ) / 86400000 + 1 
+    let Dates = new Array( reservedDays ).fill("init");
     let reservedDates = Dates.map(
       (item, index) =>
         new Date(Date.parse(reservation["checkIn"]) + 86400000 * index)
