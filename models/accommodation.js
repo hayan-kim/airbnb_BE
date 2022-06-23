@@ -43,6 +43,14 @@ const accommodationSchema = mongoose.Schema({
     required: true,
   },
 
+  zonecode : {
+    type: String,
+  },
+
+  detailAddress: {
+    type: String,
+  },
+
   desc1_hanmadi: {
     type: String,
     required: true,

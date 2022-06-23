@@ -66,6 +66,8 @@ router.post("/", authMiddleware, async (req, res) => {
     openAt,
     closeAt,
     address,
+    zonecode,
+    detailAddress, 
     desc1_hanmadi,
     desc2_surroundings,
     desc3_notice,
@@ -81,6 +83,8 @@ router.post("/", authMiddleware, async (req, res) => {
     !openAt ||
     !closeAt ||
     !address ||
+    !zonecode ||
+    !detailAddress ||
     !desc1_hanmadi ||
     !desc2_surroundings ||
     !desc3_notice ||
@@ -124,6 +128,8 @@ router.post("/", authMiddleware, async (req, res) => {
     closeAt,
     Vacancy, 
     address,
+    zonecode,
+    detailAddress, 
     desc1_hanmadi,
     desc2_surroundings,
     desc3_notice,
@@ -146,6 +152,8 @@ router.put("/:accId", authMiddleware, async (req, res) => {
     openAt,
     closeAt,
     address,
+    zonecode,
+    detailAddress, 
     desc1_hanmadi,
     desc2_surroundings,
     desc3_notice,
@@ -163,6 +171,8 @@ router.put("/:accId", authMiddleware, async (req, res) => {
     !openAt ||
     !closeAt ||
     !address ||
+    !zonecode ||
+    !detailAddress ||
     !desc1_hanmadi ||
     !desc2_surroundings ||
     !desc3_notice ||
@@ -220,6 +230,8 @@ router.put("/:accId", authMiddleware, async (req, res) => {
           closeAt,
           Vacancy,
           address,
+          zonecode,
+          detailAddress, 
           desc1_hanmadi,
           desc2_surroundings,
           desc3_notice,
